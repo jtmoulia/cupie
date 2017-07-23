@@ -43,6 +43,5 @@ if __name__ == '__main__':
     modprobe('w1-gpio')
     modprobe('w1-therm')
     device_file = device_path_to_file(get_device_paths()[0])
-    while True:
-        read_temp(device_file)
-        time.sleep(1)
+    temp_c, temp_f = read_temp(device_file)
+    print(temp_f)

@@ -31,5 +31,6 @@ case "$1" in
         ;;
     temp)
         ssh-pig "if [[ ! -d cupie ]]; then git clone ${repo}; fi && (cd cupie && git pull origin ${rev})"
+        ssh-pig "(cd cupie && python -m cupie.therm)"
         ;;
 esac
