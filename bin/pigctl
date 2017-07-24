@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 cupie_root="$( cd "$( dirname "$( dirname "$( readlink "${BASH_SOURCE[0]}" )" )" )" && pwd )"
 user=jtmoulia
-#host=192.168.50.205
-host=cupie
+host=192.168.50.205
 port=8554
 repo="https://github.com/jtmoulia/cupie.git"
 rev=master
@@ -44,6 +43,12 @@ case "$1" in
             tail)
                 shift 1
                 ssh-pig "journalctl -u 'temp.service' $@ | grep -v 'systemd' --line-buffered"
+                ;;
+            draw)
+                "${cupie_root}/bin/pigctl" temp tail --output=short-iso \
+                    | grep Temperature \
+                    | perl -pe 's/^([\d\:T\+\-]+).* ([\d\.]+)$/$1,$2/g' \
+                    | "${cupie_root}/bin/draw"
                 ;;
             *)
                 echo "Unrecognized command: $1"
