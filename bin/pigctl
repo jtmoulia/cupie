@@ -45,10 +45,12 @@ case "$1" in
                 ssh-pig "journalctl -u 'temp.service' $@ | grep -v 'systemd' --line-buffered"
                 ;;
             draw)
-                "${cupie_root}/bin/pigctl" temp tail --output=short-iso \
+                shift 1
+                "${cupie_root}/bin/pigctl" temp tail --output=short-iso $@ \
                     | grep Temperature \
                     | perl -pe 's/^([\d\:T\+\-]+).* ([\d\.]+)$/$1,$2/g' \
-                    | "${cupie_root}/bin/draw"
+                    | "${cupie_root}/bin/draw" --title='Temperature over Time' \
+                                               --xlabel="Datetime" --ylabel="Temperature (deg F)"
                 ;;
             *)
                 echo "Unrecognized command: $1"

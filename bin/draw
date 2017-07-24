@@ -1,19 +1,44 @@
 #!/usr/bin/env python3
+import argparse
 import dateutil.parser
-import fileinput
+import sys
 
+import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 
+matplotlib.rc('font', size=22)
 
-def yield_lines():
-    for line in fileinput.input():
+
+def plot(series, title=None, xlabel=None, ylabel=None):
+    fig = plt.figure()
+    plt.plot(series)
+    if title:
+        fig.suptitle(title)
+    if xlabel:
+        plt.xlabel(xlabel)
+    if ylabel:
+        plt.ylabel(ylabel)
+    plt.show()
+
+
+def yield_points():
+    for line in sys.stdin.readlines():
         date, value = line.split(',')
-        yield pd.to_datetime(date), value
+        yield pd.to_datetime(date), float(value)
 
 
 if __name__ == '__main__':
-    raw_points = list(yield_lines())
-    series = pd.Series([p[1] for p in raw_points], index=[p[0] for p in raw_points])
-    plt.plot(series)
-    plt.show()
+    parser = argparse.ArgumentParser(description='Draw data from stdin')
+    parser.add_argument('--title', help='chart title')
+    parser.add_argument('--xlabel', help='chart x axis label')
+    parser.add_argument('--ylabel', help='chart y axis label')
+    parser.add_argument('--stds', type=int, default=2)
+    args = parser.parse_args()
+    raw_series = list(yield_points())
+    series = pd.Series([p[1] for p in raw_series], index=[p[0] for p in raw_series])
+    plot(series[(series.mean() + args.stds * series.std() > series) &
+                (series.mean() - args.stds * series.std() < series)],
+         title=args.title,
+         xlabel=args.xlabel,
+         ylabel=args.ylabel)
