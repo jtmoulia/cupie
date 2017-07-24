@@ -1,0 +1,6 @@
+[Unit]
+Description=Temperature Logger
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/log-temp

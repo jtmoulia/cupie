@@ -1,0 +1,34 @@
+---
+- name: install packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - python
+
+- name: copy in log-temp script
+  copy:
+    src: files/log-temp.sh
+    dest: /usr/local/bin/log-temp
+    mode: 0750
+  become: yes
+
+- name: copy in temp.service
+  copy:
+    src: files/temp.service
+    dest: /etc/systemd/system/temp.service
+    mode: 0644
+  become: yes
+
+- name: copy in temp.timer
+  copy:
+    src: files/temp.timer
+    dest: /etc/systemd/system/temp.timer
+    mode: 0644
+  become: yes
+
+- name: enable temp.service
+  service:
+    name: temp.service
+    enabled: yes
+  become: yes

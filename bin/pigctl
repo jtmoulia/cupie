@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
+cupie_root="$( cd "$( dirname "$( dirname "$( readlink "${BASH_SOURCE[0]}" )" )" )" && pwd )"
 user=jtmoulia
-host=192.168.50.205
+#host=192.168.50.205
+host=cupie
 port=8554
 repo="https://github.com/jtmoulia/cupie.git"
 rev=master
-
 
 ssh-pig() {
     ssh "${user}@${host}" $@
 }
 
 case "$1" in
+    update)
+        ansible-playbook --ask-become-pass --inventory "${cupie_root}/inventory.conf" "${cupie_root}/playbook.yml"
+        # ssh-pig "if [[ ! -d cupie ]]; then git clone ${repo}; fi && (cd cupie && git pull origin ${rev})"
+        ;;
     cam)
+        shift
         case "$1" in
             run)
                 ssh-pig "/opt/vc/bin/raspivid -o - -w 920 -h 540 -t 9999999 | cvlc -I 'dummy' -v stream:///dev/stdin --sout '#rtp{sdp=rtsp://${user}:${user}@${host}:${port}/}' :demux=h264"
@@ -30,7 +36,23 @@ case "$1" in
         esac
         ;;
     temp)
-        ssh-pig "if [[ ! -d cupie ]]; then git clone ${repo}; fi && (cd cupie && git pull origin ${rev})"
-        ssh-pig "(cd cupie && python -m cupie.therm)"
+        shift 1
+        case "$1" in
+            sample)
+                ssh-pig -t "sudo /usr/local/bin/log-temp"
+                ;;
+            tail)
+                shift 1
+                ssh-pig "journalctl -u 'temp.service' $@ | grep -v 'systemd' --line-buffered"
+                ;;
+            *)
+                echo "Unrecognized command: $1"
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        echo "Unrecognized command: $1"
+        exit 1
         ;;
 esac
