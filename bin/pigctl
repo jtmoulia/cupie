@@ -35,7 +35,7 @@ case "$1" in
         esac
         ;;
     temp)
-        shift 1
+        shift
         case "$1" in
             sample)
                 ssh-pig -t "sudo /usr/local/bin/log-temp"
@@ -54,6 +54,21 @@ case "$1" in
                 ;;
             *)
                 echo "Unrecognized command: $1"
+                exit 1
+                ;;
+        esac
+        ;;
+    light)
+        shift
+        case "$1" in
+            on)
+                ssh-pig -t "(cd /home/jtmoulia/cupie && sudo python -m cupie.light on)"
+                ;;
+            off)
+                ssh-pig -t "(cd /home/jtmoulia/cupie && sudo python -m cupie.light off)"
+                ;;
+            *)
+                echo "Unrecognized light sub-command: $1"
                 exit 1
                 ;;
         esac
