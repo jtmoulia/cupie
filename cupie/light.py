@@ -4,6 +4,8 @@ import sys
 PIN = 24
 
 GPIO.setmode(GPIO.BCM)
+# NB: This script will re-setup the pin each time
+GPIO.setwarnings(False)
 GPIO.setup(PIN, GPIO.OUT)
 
 
