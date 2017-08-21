@@ -1,0 +1,9 @@
+* CuPie
+
+** Requirements:
+
+  Install ansible galaxy deps
+
+  #+begin_src sh
+    ansible-galaxy install -r requirements.yml
+  #+end_src
