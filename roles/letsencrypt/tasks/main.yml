@@ -5,7 +5,7 @@
 - name: add sudoers policy www
   lineinfile:
     create: yes
-    line: "{{ ansible_user }} ALL=(www) ALL"
+    line: "www ALL=(www) ALL"
     path: /usr/local/etc/sudoers.d/www
     state: present
   become: true
@@ -93,24 +93,17 @@
 
 # cron setup
 
-- name: 'add {{ letsencrypt_user }} to the cron allow file'
-  lineinfile:
-    line: '{{ letsencrypt_user }}'
-    path: /var/cron/allow
-  become: true
-  tags: [ssl, cron]
-
-- name: install cronjob for key generation
-  cron:
-    job: '{{ dehydrated_software_directory }}/dehydrated -c'
-    day: '{{ letsencrypt_cronjob_daysofmonth }}'
-    hour: 4
-    minute: 30
-    state: present
-    name: 'letsencrypt certificate renewal'
-    user: '{{ letsencrypt_user }}'
-  become: true
-  become_user: '{{ letsencrypt_user }}'
-  tags: [ssl, cron]
+# - name: install cronjob for key generation
+#   cron:
+#     job: '{{ dehydrated_software_directory }}/dehydrated -c'
+#     day: '{{ letsencrypt_cronjob_daysofmonth }}'
+#     hour: 4
+#     minute: 30
+#     state: present
+#     name: 'letsencrypt certificate renewal'
+#     user: '{{ letsencrypt_user }}'
+#   become: true
+#   become_user: '{{ letsencrypt_user }}'
+#   tags: [ssl, cron]
 
 ...
