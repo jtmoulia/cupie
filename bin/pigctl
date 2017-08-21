@@ -6,7 +6,7 @@ port=8554
 repo="https://github.com/jtmoulia/cupie.git"
 rev=master
 
-ssh-pig() {
+ssh-cupie() {
     ssh "${user}@${host}" $@
 }
 
@@ -14,17 +14,17 @@ case "$1" in
     update)
         shift
         ansible-playbook --inventory "${cupie_root}/inventory.conf" "${cupie_root}/playbook.yml" $@
-        # ssh-pig "if [[ ! -d cupie ]]; then git clone ${repo}; fi && (cd cupie && git pull origin ${rev})"
+        # ssh-cupie "if [[ ! -d cupie ]]; then git clone ${repo}; fi && (cd cupie && git pull origin ${rev})"
         ;;
     cam)
         shift
         case "$1" in
             run)
-                ssh-pig "/opt/vc/bin/raspivid -o - -w 920 -h 540 -t 9999999 | cvlc -I 'dummy' -v stream:///dev/stdin --sout '#rtp{sdp=rtsp://${user}:${user}@${host}:${port}/}' :demux=h264"
-                ssh-pig "pkill -f raspivid"
+                ssh-cupie "/opt/vc/bin/raspivid -o - -w 920 -h 540 -t 9999999 | cvlc -I 'dummy' -v stream:///dev/stdin --sout '#rtp{sdp=rtsp://${user}:${user}@${host}:${port}/}' :demux=h264"
+                ssh-cupie "pkill -f raspivid"
                 ;;
             kill)
-                ssh-pig "pkill -f raspivid"
+                ssh-cupie "pkill -f raspivid"
                 ;;
             vlc)
                 vlc "rtsp://${host}:${port}/"
@@ -39,11 +39,11 @@ case "$1" in
         shift
         case "$1" in
             sample)
-                ssh-pig -t "sudo /usr/local/bin/log-temp"
+                ssh-cupie -t "sudo /usr/local/bin/log-temp"
                 ;;
             tail)
                 shift 1
-                ssh-pig "journalctl -u 'temp.service' $@ | grep -v 'systemd' --line-buffered"
+                ssh-cupie "journalctl -u 'temp.service' $@ | grep -v 'systemd' --line-buffered"
                 ;;
             draw)
                 shift 1
@@ -63,10 +63,10 @@ case "$1" in
         shift
         case "$1" in
             on)
-                ssh-pig -t "(cd /home/jtmoulia/cupie && sudo python -m cupie.light on)"
+                ssh-cupie -t "(cd /home/jtmoulia/cupie && sudo python -m cupie.light on)"
                 ;;
             off)
-                ssh-pig -t "(cd /home/jtmoulia/cupie && sudo python -m cupie.light off)"
+                ssh-cupie -t "(cd /home/jtmoulia/cupie && sudo python -m cupie.light off)"
                 ;;
             *)
                 echo "Unrecognized light sub-command: $1"
