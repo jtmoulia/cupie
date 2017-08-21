@@ -5,7 +5,7 @@ from cupie import light
 
 
 app = Flask(__name__)
-ask = Ask(app, '/alexa')
+ask = Ask(app, '/')
 
 
 @ask.intent('LightOnIntent')
