@@ -1,0 +1,116 @@
+---
+
+# one time
+
+- name: add sudoers policy www
+  lineinfile:
+    create: yes
+    line: "{{ ansible_user }} ALL=(www) ALL"
+    path: /usr/local/etc/sudoers.d/www
+    state: present
+  become: true
+  tags: [ssl]
+
+- name: create base directory
+  file:
+    path: '{{ dehydrated_base_directory }}'
+    state: directory
+    mode: 0700
+    owner: '{{ letsencrypt_user }}'
+    group: '{{ letsencrypt_group }}'
+  become: true
+  tags: [ssl]
+    
+- name: create certs directory
+  file:
+    path: '{{ dehydrated_certs_directory }}'
+    state: directory
+    mode: '{{ letsencrypt_certs_dir_permissions }}'
+    owner: '{{ letsencrypt_certs_dir_owner }}'
+    group: '{{ letsencrypt_certs_dir_group }}'
+  become: true
+  tags: [ssl]
+
+- name: create program directory
+  file:
+    path: '{{ dehydrated_software_directory }}'
+    state: directory
+    owner: '{{ letsencrypt_certs_dir_owner }}'
+    group: '{{ letsencrypt_certs_dir_group }}'
+  become: true
+  tags: [ssl]
+
+- name: create challenges directory
+  file:
+    path: '{{ dehydrated_challenges_directory }}'
+    state: directory
+    owner: '{{ letsencrypt_user }}'
+    group: '{{ letsencrypt_group }}'
+  become: true
+  tags: [ssl]
+
+- name: clone dehydrated repository
+  git:
+    dest: '{{ dehydrated_software_directory }}'
+    repo: '{{ dehydrated_repo }}'
+    version: '{{ dehydrated_commit }}'
+    accept_hostkey: yes
+  become: true
+  become_user: '{{ letsencrypt_user }}'
+  tags: [ssl]
+
+- name: generate configuration file
+  template:
+    src: etc_dehydrated_config.j2
+    dest: '{{ dehydrated_config_file }}'
+  become: true
+  become_user: '{{ letsencrypt_user }}'
+  tags: [ssl]
+
+- name: generate dehydrated domain list
+  template:
+    src: domains.txt.j2
+    dest: '{{ dehydrated_domains_file }}'
+    mode: 0700
+    owner: '{{ letsencrypt_user }}'
+    group: '{{ letsencrypt_group }}'
+  become: true
+  become_user: '{{ letsencrypt_user }}'
+  tags: [ssl]
+
+- name: register with letsencrypt
+  command: '{{ dehydrated_software_directory }}/dehydrated --register --accept-terms'
+  become: true
+  become_user: '{{ letsencrypt_user }}'
+  run_once: true
+  tags: [ssl]
+
+- name: generate the initial certificate
+  command: '{{ dehydrated_software_directory }}/dehydrated -c'
+  become: true
+  become_user: '{{ letsencrypt_user }}'
+  tags: [ssl]
+
+# cron setup
+
+- name: 'add {{ letsencrypt_user }} to the cron allow file'
+  lineinfile:
+    line: '{{ letsencrypt_user }}'
+    path: /var/cron/allow
+  become: true
+  tags: [ssl, cron]
+
+- name: install cronjob for key generation
+  cron:
+    job: '{{ dehydrated_software_directory }}/dehydrated -c'
+    day: '{{ letsencrypt_cronjob_daysofmonth }}'
+    hour: 4
+    minute: 30
+    state: present
+    name: 'letsencrypt certificate renewal'
+    user: '{{ letsencrypt_user }}'
+  become: true
+  become_user: '{{ letsencrypt_user }}'
+  tags: [ssl, cron]
+
+...

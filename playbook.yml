@@ -2,3 +2,4 @@
 - hosts: cupie
   roles:
     - {role: cupie, tags: cupie}
+    - {role: letsencrypt, tags: letsencrypt}

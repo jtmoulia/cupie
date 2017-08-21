@@ -1,0 +1,15 @@
+---
+dependencies:
+  - role: jdauphant.nginx
+    become: true
+    tags: [nginx]
+    nginx_user: www
+    nginx_events_param:
+      - worker_connections 512
+    nginx_sites:
+      wellknown:
+        - listen 80
+        - 'server_name {{ nginx_server_name }}'
+        - location /.well-known/acme-challenge {
+              alias /var/www/letsencrypt;
+          }
