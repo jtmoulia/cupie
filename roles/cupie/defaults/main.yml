@@ -1,2 +1,5 @@
 ---
+nginx_server_name: curiebot.ddns.net
+nginx_pid_file: null
+
 cupie_server_name: curiebot.ddns.net

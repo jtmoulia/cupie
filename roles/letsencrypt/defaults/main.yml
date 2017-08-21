@@ -1,4 +1,4 @@
-nginx_server_name: 'pigbug.ddns.net'
+nginx_server_name: curiebot.ddns.net
 nginx_pid_file: null
 
 dehydrated_repo: 'https://github.com/lukas2511/dehydrated.git'
