@@ -12,7 +12,7 @@ ssh-pig() {
 
 case "$1" in
     update)
-        ansible-playbook --ask-become-pass --inventory "${cupie_root}/inventory.conf" "${cupie_root}/playbook.yml"
+        ansible-playbook --inventory "${cupie_root}/inventory.conf" "${cupie_root}/playbook.yml"
         # ssh-pig "if [[ ! -d cupie ]]; then git clone ${repo}; fi && (cd cupie && git pull origin ${rev})"
         ;;
     cam)
