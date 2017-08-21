@@ -1,4 +1,11 @@
 ---
 - hosts: cupie
   roles:
-    - {role: cupie, tags: cupie}
+    - role: letsencrypt
+      tags: letsencrypt
+      vars:
+        dehydrated_ca: 'https://acme-v01.api.letsencrypt.org/directory'
+        letsencrypt_certs:
+          - host: [curiebot.ddns.net]
+    - role: cupie
+      tags: cupie

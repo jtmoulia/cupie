@@ -39,9 +39,13 @@ def read_temp(device_file):
         return temp_c, temp_f
 
 
+def get():
+    device_file = device_path_to_file(get_device_paths()[0])
+    temp_c, temp_f = read_temp(device_file)
+    return temp_f
+
+
 if __name__ == '__main__':
     modprobe('w1-gpio')
     modprobe('w1-therm')
-    device_file = device_path_to_file(get_device_paths()[0])
-    temp_c, temp_f = read_temp(device_file)
-    print(temp_f)
+    print(get())

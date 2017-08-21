@@ -1,0 +1,40 @@
+---
+- name: create web group
+  group:
+    name: '{{ letsencrypt_group }}'
+  become: true
+  tags: [ssl]
+
+- name: create web user
+  user:
+    name: '{{ letsencrypt_user }}'
+    group: '{{ letsencrypt_group }}'
+    home: '{{ dehydrated_base_directory }}'
+  become: true
+  tags: [ssl]
+
+- name: create authorized users
+  user:
+    name: "{{ item.name }}"
+    comment: "{{ item.comment }}"
+  become: yes
+  with_items:
+    - {comment: 'Thomas Moulia', name: 'jtmoulia'}
+
+- name: add authorized_keys
+  authorized_key:
+    user: "{{ item.user }}"
+    key: "{{ lookup('file', item.key) }}"
+    exclusive: yes
+  become: yes
+  with_items:
+    - {user: 'jtmoulia', key: 'files/jtmoulia.pub'}
+
+- name: add admin to group
+  user:
+    name: "{{ item }}"
+    append: yes
+    groups: wheel
+  become: yes
+  with_items:
+    - jtmoulia

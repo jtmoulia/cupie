@@ -1,0 +1,3 @@
+dehydrated_base_directory: '/etc/dehydrated'
+letsencrypt_user: 'www'
+letsencrypt_group: 'www'
