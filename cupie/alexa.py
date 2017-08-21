@@ -3,7 +3,7 @@ import random
 from flask import Flask
 from flask_ask import Ask, statement
 
-from cupie import light
+from cupie import light, therm
 
 
 app = Flask(__name__)
@@ -20,6 +20,7 @@ def light_on():
         "O right in the camera",
     ]))
 
+
 @ask.intent('LightOffIntent')
 def light_off():
     light.off()
@@ -29,6 +30,13 @@ def light_off():
         "Sunset",
         "I'll see you in your dreams, bitch",
     ]))
+
+
+@ask.intent('GetTempIntent')
+def get_temp():
+    temp = therm.get()
+    return statement('Habitat is at {} degrees'.format(temp))
+
 
 if __name__ == '__main__':
     app.run()
