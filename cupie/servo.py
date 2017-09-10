@@ -14,14 +14,25 @@ wiringpi.pwmSetRange(2000)
 
 
 def set_angle(angle):
-    hz = ((PWM_MAX_HZ - PWM_MIN_HZ) / 180.0) * angle
+    hz = ((PWM_MAX_HZ - PWM_MIN_HZ) / 180.0) * angle + PWM_MIN_HZ
     wiringpi.pwmWrite(18, int(hz))
 
 
 def draw_scr(scr, angle):
+    scr.erase()
     scr.box()
     scr.addstr(1, 2, 'Angle: {}'.format(angle))
     scr.refresh()
+
+
+def rotate(angle, delta):
+    new_angle = angle + delta
+    if new_angle > 180:
+        return 180
+    elif new_angle < 0:
+        return 0
+    else:
+        return new_angle
 
 
 if __name__ == '__main__':
@@ -36,9 +47,9 @@ if __name__ == '__main__':
         draw_scr(scr, angle)
         char = scr.getch()
         if char == curses.KEY_RIGHT:
-            angle += 1
+            angle = rotate(angle, 1)
         elif char == curses.KEY_LEFT:
-            angle -= 1
+            angle = rotate(angle, -1)
         else:
             break
 

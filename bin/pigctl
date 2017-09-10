@@ -20,7 +20,7 @@ case "$1" in
         shift
         case "$1" in
             run)
-                ssh-cupie "/opt/vc/bin/raspivid -o - -w 920 -h 540 -t 9999999 | cvlc -I 'dummy' -v stream:///dev/stdin --sout '#rtp{sdp=rtsp://${user}:${user}@${host}:${port}/}' :demux=h264"
+                ssh-cupie "/opt/vc/bin/raspivid -o - -w 920 -h 540 -t 9999999 | cvlc -I 'dummy' -v stream:///dev/stdin --sout '#rtp{sdp=rtsp://${user}:${user}@${host}:${port}/}' :demux=h264 --transform-type 180"
                 ssh-cupie "pkill -f raspivid"
                 ;;
             kill)
