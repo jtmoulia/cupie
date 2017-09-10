@@ -14,7 +14,7 @@ wiringpi.pwmSetRange(2000)
 
 
 def set_angle(angle):
-    hz = ((PWM_MAX_HZ - PWM_MIN_HZ) / 180.0) * angle + PW_MIN_HZ
+    hz = ((PWM_MAX_HZ - PWM_MIN_HZ) / 180.0) * angle + PWM_MIN_HZ
     wiringpi.pwmWrite(18, int(hz))
 
 
