@@ -25,6 +25,16 @@ def draw_scr(scr, angle):
     scr.refresh()
 
 
+def rotate(angle, delta):
+    new_angle = angle + delta
+    if new_angle > 180:
+        return 180
+    elif new_angle < 0:
+        return 0
+    else:
+        return new_angle
+
+
 if __name__ == '__main__':
     scr = curses.initscr()
     scr.keypad(1)
@@ -37,9 +47,9 @@ if __name__ == '__main__':
         draw_scr(scr, angle)
         char = scr.getch()
         if char == curses.KEY_RIGHT:
-            angle += 1
+            angle = rotate(angle, 1)
         elif char == curses.KEY_LEFT:
-            angle -= 1
+            angle = rotate(angle, -1)
         else:
             break
 
